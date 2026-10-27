@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô Phỏng 3D Siêu Thực Từ Ảnh 2D</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #0b0b0b; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            max-width: 320px;
+        }
+        h2 { margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #f0f0f0; }
+        p { margin: 0 0 15px 0; font-size: 13px; color: #aaaaaa; line-height: 1.4; }
+        .file-upload-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .file-upload-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        #imageLoader { display: none; }
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Giao diện điều khiển bên góc trái -->
+    <div id="ui-container">
+        <h2>Trình Mô Phỏng 3D</h2>
+        <p>Tải lên một bức ảnh 2D bất kỳ (vân đá, hoa văn, khuôn mặt...) để hệ thống tự động điêu khắc nổi thành khối 3D siêu thực.</p>
+        <label for="imageLoader" class="file-upload-btn">📁 Chọn Ảnh 2D Ngay</label>
+        <input type="file" id="imageLoader" accept="image/*">
+    </div>
+
+    <div id="instructions">Giữ và kéo chuột (hoặc chạm màn hình) để xoay vật thể 360 độ</div>
+
+    <!-- Nhúng thư viện đồ họa Three.js phiên bản ổn định từ CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Nhúng tập tin xử lý logic 3D -->
+    <script src="game.js"></script>
+</body>
+</html>
