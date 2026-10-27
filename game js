@@ -1,0 +1,86 @@
+// 1. Khởi tạo Scene, Camera và Renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Thêm ánh sáng
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 5, 5);
+scene.add(directionalLight);
+
+// Đặt vị trí camera
+camera.position.z = 5;
+
+// Biến lưu trữ đối tượng 3D hiện tại
+let currentMesh = null;
+
+// Tạo một vật thể mặc định ban đầu (Khối hộp trống)
+const geometry = new THREE.BoxGeometry(2, 2, 0.2);
+let material = new THREE.MeshStandardMaterial({ color: 0x555555 });
+currentMesh = new THREE.Mesh(geometry, material);
+scene.add(currentMesh);
+
+// 2. Xử lý sự kiện khi người chơi chọn ảnh 2D từ máy tính/điện thoại
+const imageLoader = document.getElementById('imageLoader');
+imageLoader.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load(event.target.result, (texture) => {
+                
+                // Đổi texture của vật thể thành bức ảnh 2D người chơi vừa chọn
+                material = new THREE.MeshStandardMaterial({ map: texture });
+                
+                // Xóa vật thể cũ và tạo vật thể 3D mới với bức ảnh đó
+                scene.remove(currentMesh);
+                currentMesh = new THREE.Mesh(geometry, material);
+                scene.add(currentMesh);
+            });
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+// 3. Cho phép người chơi dùng chuột xoay vật thể 3D
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+
+window.addEventListener('mousedown', (e) => { isDragging = true; });
+window.addEventListener('mouseup', (e) => { isDragging = false; });
+window.addEventListener('mousemove', (e) => {
+    if (isDragging && currentMesh) {
+        const deltaX = e.clientX - previousMousePosition.x;
+        const deltaY = e.clientY - previousMousePosition.y;
+
+        currentMesh.rotation.y += deltaX * 0.005;
+        currentMesh.rotation.x += deltaY * 0.005;
+    }
+    previousMousePosition = { x: e.clientX, y: e.clientY };
+});
+
+// Xử lý khi thay đổi kích thước màn hình
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// 4. Vòng lặp game (Render loop)
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Nếu người chơi không kéo chuột, tự động xoay nhẹ một chút cho sinh động
+    if (!isDragging && currentMesh) {
+        currentMesh.rotation.y += 0.005;
+    }
+    
+    renderer.render(scene, camera);
+}
+animate();
