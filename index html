@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Mô Phỏng: Ảnh 2D thành 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #111; font-family: sans-serif; }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: white;
+        }
+        input[type="file"] {
+            background: #fff;
+            color: #000;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h2>Trình Mô Phỏng 3D</h2>
+        <p>Chọn một bức ảnh 2D để biến nó thành vật thể 3D:</p>
+        <input type="file" id="imageLoader" accept="image/*">
+    </div>
+
+    <!-- Nhúng thư viện Three.js từ CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
