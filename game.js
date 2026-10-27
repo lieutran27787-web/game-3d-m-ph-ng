@@ -27,7 +27,7 @@ let currentGroup = new THREE.Group();
 scene.add(currentGroup);
 
 // Hàm xóa vật thể cũ an toàn
-主持人 = function clearScene() {
+function clearScene() {
     while(currentGroup.children.length > 0){ 
         const obj = currentGroup.children[0]; 
         currentGroup.remove(obj); 
@@ -39,14 +39,13 @@ function setTheme(type) {
     clearScene();
     
     if (type === 'house') {
-        // Mô phỏng Ngôi nhà (Cấu trúc hình hộp kết hợp mái nhà)
+        // Mô phỏng Ngôi nhà
         const houseGeo = new THREE.BoxGeometry(2, 1.5, 2);
         const mat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3, metalness: 0.1 });
         const house = new THREE.Mesh(houseGeo, mat);
         house.position.y = -0.2;
         currentGroup.add(house);
         
-        // Mái nhà
         const roofGeo = new THREE.ConeGeometry(1.6, 1, 4);
         const roofMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
         const roof = new THREE.Mesh(roofGeo, roofMat);
@@ -55,26 +54,21 @@ function setTheme(type) {
         currentGroup.add(roof);
 
     } else if (type === 'body') {
-        // Mô phỏng Cơ thể người (Trái tim / Huyết mạch dạng khối cầu uốn lượn)
+        // Mô phỏng Cơ thể người (Trái tim sinh học)
         const heartGeo = new THREE.SphereGeometry(1.2, 64, 64);
-        const mat = new THREE.MeshStandardMaterial({ 
-            color: 0xd90429, 
-            roughness: 0.2, 
-            metalness: 0.3,
-            wireframe: false
-        });
+        const mat = new THREE.MeshStandardMaterial({ color: 0xd90429, roughness: 0.2, metalness: 0.3 });
         const heart = new THREE.Mesh(heartGeo, mat);
         currentGroup.add(heart);
 
     } else if (type === 'food') {
-        // Mô phỏng Đồ ăn (Táo / Dinh dưỡng hình cầu lõm cuống)
+        // Mô phỏng Đồ ăn (Quả táo dinh dưỡng)
         const foodGeo = new THREE.SphereGeometry(1.3, 32, 32);
         const mat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.25 });
         const food = new THREE.Mesh(foodGeo, mat);
         currentGroup.add(food);
 
     } else if (type === 'tools') {
-        // Mô phỏng Vật dụng (Bánh răng / Công cụ kỹ thuật)
+        // Mô phỏng Vật dụng (Bánh răng công cụ)
         const toolGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.4, 16);
         const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.8 });
         const tool = new THREE.Mesh(toolGeo, mat);
@@ -86,7 +80,7 @@ function setTheme(type) {
 // Khởi chạy mặc định chủ đề Ngôi Nhà
 setTheme('house');
 
-// 4. Tính năng tải ảnh 2D tùy biến áp lên khối 3D (như các phần trước)
+// 4. Tính năng tải ảnh 2D tùy biến áp lên khối 3D
 const imageLoader = document.getElementById('imageLoader');
 imageLoader.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -128,7 +122,6 @@ window.addEventListener('mousemove', (e) => {
     previousMousePosition = { x: e.clientX, y: e.clientY };
 });
 
-// Hỗ trợ cảm ứng trên điện thoại
 let touchStartX = 0, touchStartY = 0;
 window.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
