@@ -3,106 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô Phỏng 3D: Nhà, Cơ Thể & Đời Sống</title>
+    <title>HI3D Style - Mô Phỏng 3D Anime</title>
     <style>
         * { box-sizing: border-box; }
         body { 
             margin: 0; 
             overflow: hidden; 
-            background: #090d16; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #050515; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
         }
+        
+        /* Khung giao diện đậm chất game Anime Sci-Fi */
         #ui-container {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 10;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 15, 35, 0.85);
             padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 240, 255, 0.4);
             color: #ffffff;
-            width: 300px;
+            width: 280px;
         }
-        h2 { margin: 0 0 6px 0; font-size: 17px; font-weight: 600; color: #38bdf8; }
-        p { margin: 0 0 15px 0; font-size: 12px; color: #94a3b8; line-height: 1.4; }
+        h2 { 
+            margin: 0 0 5px 0; 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: #00f0ff; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        p { margin: 0 0 15px 0; font-size: 11px; color: #a5b4fc; line-height: 1.4; }
         
-        .section-title { font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; margin-top: 12px; }
+        .section-title { font-size: 12px; font-weight: 600; color: #38bdf8; margin-bottom: 8px; margin-top: 10px; text-transform: uppercase; }
         
         .btn-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 8px;
             margin-bottom: 12px;
         }
-        .theme-btn {
-            background: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 10px;
-            border-radius: 8px;
+        .hi-btn {
+            background: linear-gradient(90deg, #1e1b4b, #312e81);
+            color: #e0e7ff;
+            border: 1px solid #6366f1;
+            padding: 9px 12px;
+            border-radius: 6px;
             font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
-        .theme-btn:hover { background: #334155; border-color: #38bdf8; color: #fff; }
+        .hi-btn:hover { 
+            background: linear-gradient(90deg, #312e81, #4f46e5);
+            border-color: #00f0ff;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            transform: translateX(3px);
+        }
         
         .file-upload-btn {
             display: block;
             width: 100%;
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: white;
+            background: linear-gradient(135deg, #00f0ff, #3b82f6);
+            color: #0f172a;
             padding: 9px 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             text-align: center;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            text-transform: uppercase;
         }
-        .file-upload-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .file-upload-btn:hover { opacity: 0.9; transform: scale(1.02); }
         #imageLoader { display: none; }
         
-        #instructions {
+        #hud-info {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            pointer-events: none;
-            letter-spacing: 0.5px;
-            background: rgba(0,0,0,0.4);
-            padding: 6px 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            letter-spacing: 1px;
+            background: rgba(10, 10, 30, 0.7);
+            padding: 8px 18px;
             border-radius: 20px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
     <div id="ui-container">
-        <h2>Mô Phỏng 3D Đa Chiều</h2>
-        <p>Khám phá sự kết nối giữa không gian sống, sinh học và vật dụng.</p>
+        <h2>HI3D Protocol</h2>
+        <p>Hệ thống mô phỏng không gian ảo phong cách Anime / Sci-Fi.</p>
         
-        <div class="section-title">Chọn Chủ Đề Mô Phỏng:</div>
+        <div class="section-title">Chọn Mô Hình 3D:</div>
         <div class="btn-grid">
-            <button class="theme-btn" onclick="setTheme('house')">🏠 Ngôi Nhà</button>
-            <button class="theme-btn" onclick="setTheme('body')">🫀 Cơ Thể Người</button>
-            <button class="theme-btn" onclick="setTheme('food')">🍎 Đồ Ăn / Dinh Dưỡng</button>
-            <button class="theme-btn" onclick="setTheme('tools')">⚙️ Vật Dụng</button>
+            <button class="hi-btn" onclick="setTheme('valkyrie')">⚡ Valkyrie Core (Linh Hồn)</button>
+            <button class="hi-btn" onclick="setTheme('mecha')">🛡️ Mecha Shield (Vật Dụng)</button>
+            <button class="hi-btn" onclick="setTheme('energy')">🍎 Energy Crystal (Năng Lượng)</button>
         </div>
 
-        <div class="section-title">Hoặc Tùy Chỉnh Riêng:</div>
-        <label for="imageLoader" class="file-upload-btn">📁 Tải Ảnh 2D Thành 3D</label>
+        <div class="section-title">Tùy Chỉnh Cá Nhân:</div>
+        <label for="imageLoader" class="file-upload-btn">✨ Tải Ảnh 2D Lên 3D</label>
         <input type="file" id="imageLoader" accept="image/*">
     </div>
 
-    <div id="instructions">Giữ và kéo chuột để xoay mô hình 360 độ</div>
+    <div id="hud-info">Giữ và kéo chuột để xoay camera chiến đấu 360 độ</div>
 
+    <!-- Nhúng Three.js từ CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="game.js"></script>
 </body>
