@@ -1,31 +1,36 @@
-// 1. Khởi tạo Scene, Camera và Renderer
+// 1. Khởi tạo Scene, Camera và Renderer với màu sắc chuẩn điện ảnh
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+scene.background = new THREE.Color(0x0b0b0b); // Nền tối làm nổi bật vật thể
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 4);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; // Tạo màu sắc chân thực như đời thực
+renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
-// Thêm ánh sáng
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+// 2. Hệ thống ánh sáng thực tế (Studio Lighting)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// Đèn chính (Key Light) tạo bóng đổ sắc nét
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
 directionalLight.position.set(5, 5, 5);
 scene.add(directionalLight);
 
-// Đặt vị trí camera
-camera.position.z = 5;
+// Đèn phụ màu xanh nhẹ (Rim Light) làm nổi bật viền vật thể
+const rimLight = new THREE.DirectionalLight(0x3366ff, 1.5);
+rimLight.position.set(-5, -3, -3);
+scene.add(rimLight);
 
-// Biến lưu trữ đối tượng 3D hiện tại
 let currentMesh = null;
 
-// Tạo một vật thể mặc định ban đầu (Khối hộp trống)
-const geometry = new THREE.BoxGeometry(2, 2, 0.2);
-let material = new THREE.MeshStandardMaterial({ color: 0x555555 });
-currentMesh = new THREE.Mesh(geometry, material);
-scene.add(currentMesh);
+// 3. Tạo khung hình học siêu chi tiết (Plane với 128x128 lưới để tạo độ lồi lõm 3D)
+const geometry = new THREE.PlaneGeometry(2.5, 2.5, 128, 128);
 
-// 2. Xử lý sự kiện khi người chơi chọn ảnh 2D từ máy tính/điện thoại
+// 4. Xử lý sự kiện tải ảnh 2D và biến đổi thành 3D siêu thực
 const imageLoader = document.getElementById('imageLoader');
 imageLoader.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -35,11 +40,26 @@ imageLoader.addEventListener('change', (e) => {
             const textureLoader = new THREE.TextureLoader();
             textureLoader.load(event.target.result, (texture) => {
                 
-                // Đổi texture của vật thể thành bức ảnh 2D người chơi vừa chọn
-                material = new THREE.MeshStandardMaterial({ map: texture });
+                // Cấu hình texture sắc nét
+                texture.generateMipmaps = true;
+                texture.minFilter = THREE.LinearMipmapLinearFilter;
+
+                // Tạo vật liệu PBR cao cấp với hiệu ứng ánh sáng ngoài đời thực
+                const material = new THREE.MeshStandardMaterial({
+                    map: texture,                    // Ảnh màu gốc
+                    displacementMap: texture,        // Dùng chính ảnh này để tạo khối nổi 3D theo độ sáng tối
+                    displacementScale: 0.25,         // Độ sâu của khối nổi (càng cao càng gồ ghề)
+                    roughness: 0.3,                  // Độ bóng (0: bóng loáng như kính, 1: nhám)
+                    metalness: 0.1,                  // Độ kim loại
+                    side: THREE.DoubleSide
+                });
                 
-                // Xóa vật thể cũ và tạo vật thể 3D mới với bức ảnh đó
-                scene.remove(currentMesh);
+                // Xóa vật thể cũ nếu có
+                if (currentMesh) {
+                    scene.remove(currentMesh);
+                }
+
+                // Tạo mesh mới và đưa vào scene
                 currentMesh = new THREE.Mesh(geometry, material);
                 scene.add(currentMesh);
             });
@@ -48,37 +68,61 @@ imageLoader.addEventListener('change', (e) => {
     }
 });
 
-// 3. Cho phép người chơi dùng chuột xoay vật thể 3D
+// 5. Tương tác xoay mượt mà bằng chuột
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 
-window.addEventListener('mousedown', (e) => { isDragging = true; });
-window.addEventListener('mouseup', (e) => { isDragging = false; });
+window.addEventListener('mousedown', () => { isDragging = true; });
+window.addEventListener('mouseup', () => { isDragging = false; });
 window.addEventListener('mousemove', (e) => {
     if (isDragging && currentMesh) {
         const deltaX = e.clientX - previousMousePosition.x;
         const deltaY = e.clientY - previousMousePosition.y;
 
-        currentMesh.rotation.y += deltaX * 0.005;
-        currentMesh.rotation.x += deltaY * 0.005;
+        currentMesh.rotation.y += deltaX * 0.008;
+        currentMesh.rotation.x += deltaY * 0.008;
     }
     previousMousePosition = { x: e.clientX, y: e.clientY };
 });
 
-// Xử lý khi thay đổi kích thước màn hình
+// Hỗ trợ cảm ứng cho điện thoại/máy tính bảng
+let touchStartX = 0;
+let touchStartY = 0;
+window.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+        isDragging = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }
+});
+window.addEventListener('touchend', () => { isDragging = false; });
+window.addEventListener('touchmove', (e) => {
+    if (isDragging && currentMesh && e.touches.length === 1) {
+        const deltaX = e.touches[0].clientX - touchStartX;
+        const deltaY = e.touches[0].clientY - touchStartY;
+
+        currentMesh.rotation.y += deltaX * 0.008;
+        currentMesh.rotation.x += deltaY * 0.008;
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }
+});
+
+// Tự động điều chỉnh khi đổi kích thước màn hình
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// 4. Vòng lặp game (Render loop)
+// 6. Vòng lặp render thời gian thực
 function animate() {
     requestAnimationFrame(animate);
     
-    // Nếu người chơi không kéo chuột, tự động xoay nhẹ một chút cho sinh động
+    // Tự động xoay nhẹ nhàng khi người chơi không tương tác
     if (!isDragging && currentMesh) {
-        currentMesh.rotation.y += 0.005;
+        currentMesh.rotation.y += 0.003;
     }
     
     renderer.render(scene, camera);
